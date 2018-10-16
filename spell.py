@@ -21,10 +21,12 @@ class lcsobj():
             seq = re.split(self._refmt, seq.lstrip().rstrip())
         count = 0
         lastmatch = -1
-        for i in self._lcsseq:
-            if i == '*': continue
+        for i in range(len(self._lcsseq)):
+            #if self._lcsseq[i] == '*':
+            if self._ispos(i) == True:
+                continue
             for j in range(lastmatch+1, len(seq)):
-                if i == seq[j]:
+                if self._lcsseq[i] == seq[j]:
                     lastmatch = j
                     count += 1
                     break
@@ -39,16 +41,17 @@ class lcsobj():
         lastmatch = -1
         placeholder = False
 
-        for i in self._lcsseq:
-            if i == '*':
+        for i in range(len(self._lcsseq)):
+            #if self._lcsseq[i] == '*':
+            if self._ispos(i) == True:
                 if not placeholder:
                     temp = temp + "* "
                 placeholder = True
                 continue
             for j in range(lastmatch+1, len(seq)):
-                if i == seq[j]:
+                if self._lcsseq[i] == seq[j]:
                     placeholder = False
-                    temp = temp + i + " "
+                    temp = temp + self._lcsseq[i] + " "
                     lastmatch = j
                     break
                 elif not placeholder:
@@ -74,6 +77,15 @@ class lcsobj():
 
     def length(self):
         return len(self._lcsseq)
+
+    def _ispos(self, idx):
+        has = [i for i, x in enumerate(self._pos) if x == idx]
+        if len(has) == 0:
+            return False
+        else:
+            return True
+
+
 
 
 class lcsmap():
