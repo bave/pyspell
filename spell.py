@@ -78,15 +78,38 @@ class lcsobj():
     def length(self):
         return len(self._lcsseq)
 
-    def _ispos(self, idx):
-        has = [i for i, x in enumerate(self._pos) if x == idx]
-        if len(has) == 0:
-            return False
+    def param(self, seq):
+        if isinstance('string', type(seq)) == True:
+            seq = re.split(self._refmt, seq.lstrip().rstrip())
+
+        j = 0
+        ret = []
+        for i in range(len(self._lcsseq)):
+            slot = []
+            if self._ispos(i) == True:
+                while j < len(seq):
+                    if i != len(self._lcsseq)-1 and self._lcsseq[i+1] == seq[j]:
+                        break
+                    else:
+                        slot.append(seq[j])
+                    j+=1
+                ret.append(slot)
+
+            elif self._lcsseq[i] != seq[j]:
+                return None
+            else:
+                j += 1
+
+        if j != len(seq):
+            return None
         else:
-            return True
+            return ret
 
-
-
+    def _ispos(self, idx):
+        for i in self._pos:
+            if i == idx:
+                return True
+        return False
 
 class lcsmap():
 
@@ -107,11 +130,7 @@ class lcsmap():
             self._lineid += 1
             obj.insert(seq, self._lineid)
 
-        param = []
-        for i in obj._pos:
-            param.append(seq[i])
-
-        return obj, param
+        return obj
 
     def match(self, seq):
         if isinstance('string', type(seq)) == True:
