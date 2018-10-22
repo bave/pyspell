@@ -4,6 +4,17 @@ import re
 import json
 import pickle
 
+
+"""
+class WordScanner(re.Scanner):
+  def __init__(self):
+    # super(WordScanner, self).__init__([ #こちらは動かない。
+    re.Scanner.__init__(self, [
+        (r"\S+", lambda sc, s : s), # word
+        (r"[\n\s]+",  lambda sc, s : None) # skip
+        ], re.M) # multiline
+"""
+
 class lcsobj():
 
     def __init__(self, seq, lineid, refmt):
@@ -94,7 +105,6 @@ class lcsobj():
                         slot.append(seq[j])
                     j+=1
                 ret.append(slot)
-
             elif self._lcsseq[i] != seq[j]:
                 return None
             else:

@@ -8,6 +8,10 @@ if __name__ == '__main__':
     #s.save('test.pickle', slm)
     #slm = s.load('test.pickle')
     for i in sys.stdin.readlines():
-        obj, param = slm.insert(i.strip('\n'))
-        print(param)
+        sub = i.strip('\n')
+        obj = slm.insert(sub)
+        print(obj.param(sub))
 
+#print()
+#print("dump spell longest common subsequence")
+#print(slm.dump())
