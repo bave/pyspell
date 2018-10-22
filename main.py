@@ -10,8 +10,6 @@ if __name__ == '__main__':
     for i in sys.stdin.readlines():
         sub = i.strip('\n')
         obj = slm.insert(sub)
-        print(obj.param(sub))
+        print(obj.get_id(), obj.param(sub))
 
-#print()
-#print("dump spell longest common subsequence")
 #print(slm.dump())

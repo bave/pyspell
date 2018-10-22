@@ -4,31 +4,22 @@ import re
 import json
 import pickle
 
-
-"""
-class WordScanner(re.Scanner):
-  def __init__(self):
-    # super(WordScanner, self).__init__([ #こちらは動かない。
-    re.Scanner.__init__(self, [
-        (r"\S+", lambda sc, s : s), # word
-        (r"[\n\s]+",  lambda sc, s : None) # skip
-        ], re.M) # multiline
-"""
-
 class lcsobj():
 
-    def __init__(self, seq, lineid, refmt):
+    def __init__(self, objid, seq, lineid, refmt):
         self._refmt = refmt
-        if isinstance('string', type(seq)) == True:
+        if isinstance(seq, str) == True:
             self._lcsseq = re.split(self._refmt, seq.lstrip().rstrip())
         else:
             self._lcsseq = seq
         self._lineids = [lineid]
         self._pos = []
+        self._sep = "	"
+        self._id = objid
         return
 
     def getlcs(self, seq):
-        if isinstance('string', type(seq)) == True:
+        if isinstance(seq, str) == True:
             seq = re.split(self._refmt, seq.lstrip().rstrip())
         count = 0
         lastmatch = -1
@@ -44,10 +35,9 @@ class lcsobj():
         return count
 
     def insert(self, seq, lineid):
-        if isinstance('string', type(seq)) == True:
+        if isinstance(seq, str) == True:
             seq = re.split(self._refmt, seq.lstrip().rstrip())
         self._lineids.append(lineid)
-        pos = []
         temp = ""
         lastmatch = -1
         placeholder = False
@@ -71,10 +61,8 @@ class lcsobj():
         temp = temp.lstrip().rstrip()
         self._lcsseq = re.split(self._refmt, temp)
 
-        for i in range(len(self._lcsseq)):
-            if self._lcsseq[i] == '*':
-                pos.append(i)
-        self._pos = pos
+        self._pos = self._get_pos()
+        self._sep = self._get_sep()
 
     def tojson(self):
         temp = ""
@@ -90,7 +78,7 @@ class lcsobj():
         return len(self._lcsseq)
 
     def param(self, seq):
-        if isinstance('string', type(seq)) == True:
+        if isinstance(seq, str) == True:
             seq = re.split(self._refmt, seq.lstrip().rstrip())
 
         j = 0
@@ -115,11 +103,70 @@ class lcsobj():
         else:
             return ret
 
+    def re_param(self, seq):
+        if isinstance(seq, list) == True:
+            seq = ' '.join(seq)
+        seq = seq.lstrip().rstrip()
+
+        ret = []
+        print(self._sep)
+        print(seq)
+        p = re.split(self._sep, seq)
+        for i in p:
+            if len(i) != 0:
+                ret.append(re.split(self._refmt, i.lstrip().rstrip()))
+        if len(ret) == len(self._pos):
+            return ret
+        else:
+            return None
+
+
+
     def _ispos(self, idx):
         for i in self._pos:
             if i == idx:
                 return True
         return False
+
+    def _tcat(self, seq, s, e):
+        sub = ''
+        for i in range(s, e + 1):
+            sub += seq[i] + " "
+        return sub.rstrip()
+
+    def _get_sep(self):
+        sep_token = []
+        s = 0
+        e = 0
+        for i in range(len(self._lcsseq)):
+            if self._ispos(i) == True:
+                if s != e:
+                    sep_token.append(self._tcat(self._lcsseq, s, e))
+                s = i + 1
+                e = i + 1
+            else:
+                e = i
+            if e == len(self._lcsseq) - 1:
+                sep_token.append(self._tcat(self._lcsseq, s, e))
+                break
+
+        ret = ""
+        for i in range(len(sep_token)):
+            if i == len(sep_token)-1:
+                ret += sep_token[i]
+            else:
+                ret += sep_token[i] + '|'
+        return ret
+
+    def _get_pos(self):
+        pos = []
+        for i in range(len(self._lcsseq)):
+            if self._lcsseq[i] == '*':
+                pos.append(i)
+        return pos
+
+    def get_id(self):
+        return self._id
 
 class lcsmap():
 
@@ -127,6 +174,7 @@ class lcsmap():
         self._refmt = refmt
         self._lcsobjs = []
         self._lineid = 0
+        self._id = 0
         return
 
     def insert(self, entry):
@@ -134,8 +182,9 @@ class lcsmap():
         obj = self.match(seq)
         if obj == None:
             self._lineid += 1
-            obj = lcsobj(seq, self._lineid, self._refmt)
+            obj = lcsobj(self._id, seq, self._lineid, self._refmt)
             self._lcsobjs.append(obj)
+            self._id += 1
         else:
             self._lineid += 1
             obj.insert(seq, self._lineid)
@@ -143,7 +192,7 @@ class lcsmap():
         return obj
 
     def match(self, seq):
-        if isinstance('string', type(seq)) == True:
+        if isinstance(seq, str) == True:
             seq = re.split(self._refmt, entry.lstrip().rstrip())
         bestmatch = None
         bestmatch_len = 0
