@@ -60,7 +60,7 @@ class lcsobj():
                     temp = temp + "* "
                     placeholder = True
         temp = temp.lstrip().rstrip()
-        self._lcsseq = re.split(self._refmt, temp)
+        self._lcsseq = re.split(" ", temp)
 
         self._pos = self._get_pos()
         self._sep = self._get_sep()
