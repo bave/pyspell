@@ -194,7 +194,7 @@ class lcsmap():
 
     def match(self, seq):
         if isinstance(seq, str) == True:
-            seq = re.split(self._refmt, entry.lstrip().rstrip())
+            seq = re.split(self._refmt, seq.lstrip().rstrip())
         bestmatch = None
         bestmatch_len = 0
         seqlen = len(seq)
