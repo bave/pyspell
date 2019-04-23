@@ -60,7 +60,7 @@ class lcsobj():
                     temp = temp + "* "
                     placeholder = True
         temp = temp.lstrip().rstrip()
-        self._lcsseq = re.split(self._refmt, temp)
+        self._lcsseq = re.split(" ", temp)
 
         self._pos = self._get_pos()
         self._sep = self._get_sep()
@@ -194,7 +194,7 @@ class lcsmap():
 
     def match(self, seq):
         if isinstance(seq, str) == True:
-            seq = re.split(self._refmt, entry.lstrip().rstrip())
+            seq = re.split(self._refmt, seq.lstrip().rstrip())
         bestmatch = None
         bestmatch_len = 0
         seqlen = len(seq)
