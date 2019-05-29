@@ -215,8 +215,10 @@ class lcsmap():
         return len(self._lcsobjs)
 
     def dump(self):
+        count = 0
         for i in self._lcsobjs:
-            print(i.tojson())
+            print(count, i.tojson())
+            count += 1
 
 
 def save(filename, spell_lcsmap):
